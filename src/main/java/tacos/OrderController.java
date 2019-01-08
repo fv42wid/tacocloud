@@ -1,5 +1,6 @@
 package tacos;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import lombok.extern.slf4j.Slf4j;
 import tacos.Order;
+import tacos.User;
 //import tacos.JdbcOrderRepository;
 
 @Slf4j
@@ -32,10 +34,12 @@ public class OrderController {
 	}
 	
 	@PostMapping
-	public String processOrder(@Valid Order order, Errors errors, SessionStatus sessionStatus) {
+	public String processOrder(@Valid Order order, Errors errors, SessionStatus sessionStatus, @AuthenticationPrincipal User user) {
 		if(errors.hasErrors()) {
 			return "orderForm";
 		}
+		log.info("User" + user);
+		order.setUser(user);
 		
 		orderRepo.save(order);
 		sessionStatus.setComplete();
